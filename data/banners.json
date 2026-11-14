@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-14T01:37:00Z",
+  "updatedAt": "2026-11-14T01:40:00Z",
   "timezone": "Asia/Tokyo",
   "banners": [
     {
@@ -28,15 +28,6 @@
       "endAt": "2026-11-16T00:59:00Z",
       "sourceName": "Official X calendar mirror",
       "sourceUrl": "https://oshical.com/gkmas_official"
-    },
-    {
-      "id": "umamusume-yukino-pickup-202611",
-      "gameId": "umamusume",
-      "title": "Pickup Pretty Derby & Support Card Gacha — Yukino Bijin, Noh Reason & Stay Gold",
-      "startAt": "2026-11-10T03:00:00Z",
-      "endAt": "2026-11-19T02:59:00Z",
-      "sourceName": "Uma Musume official news",
-      "sourceUrl": "https://umamusume.jp/news/detail?id=3535"
     }
   ]
 }

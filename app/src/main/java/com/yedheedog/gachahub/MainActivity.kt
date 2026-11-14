@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
+import coil.compose.AsyncImage
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -139,13 +144,36 @@ private fun GachaHubHome() {
                 Text("YOUR GAMES", color = Muted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
             items(supportedGames) { game ->
-                Surface(color = Panel, shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth()) {
-                    Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Column {
-                            Text(game.name, color = Color.White, fontWeight = FontWeight.SemiBold)
-                            Text(game.regionLabel, color = Muted, fontSize = 12.sp)
+                Surface(
+                    color = Panel,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth().height(118.dp)
+                ) {
+                    Box(Modifier.fillMaxSize()) {
+                        AsyncImage(
+                            model = game.imageUrl,
+                            contentDescription = game.name + " artwork",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.58f))
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxSize().padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(game.name, color = Color.White, fontWeight = FontWeight.Bold)
+                                Text(game.regionLabel, color = Color.White.copy(alpha = 0.82f), fontSize = 12.sp)
+                            }
+                            Text(
+                                banners.count { it.gameId == game.id }.toString() + " banners",
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
                         }
-                        Text(banners.count { it.gameId == game.id }.toString() + " banners", color = Accent, fontSize = 12.sp)
                     }
                 }
             }

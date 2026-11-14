@@ -11,6 +11,7 @@ data class Banner(
     val imageUrl: String? = null,
     val startAt: Instant,
     val endAt: Instant,
+    val endTimeEstimated: Boolean = false,
     val sourceName: String,
     val sourceUrl: String
 )

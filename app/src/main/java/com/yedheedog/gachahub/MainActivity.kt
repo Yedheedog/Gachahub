@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -220,24 +221,41 @@ private fun BannerCard(banner: Banner, now: Instant) {
         else -> "Ended"
     }
     Surface(color = Panel, shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Text(banner.gameName, color = Accent, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            Text(banner.title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-            if (banner.featuredUnits.isNotEmpty()) {
-                Text("FEATURED LINEUP", color = Muted, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                Text(banner.featuredUnits.joinToString("  •  "), color = Color.White, fontSize = 13.sp)
+        Box(Modifier.fillMaxWidth()) {
+            if (!banner.imageUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = banner.imageUrl,
+                    contentDescription = banner.title + " banner artwork",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().height(230.dp)
+                )
             }
-            Text(status, color = if (live) Color(0xFF8DE0B0) else Muted, fontSize = 12.sp)
-            Text("Start  " + JstDate.format(banner.startAt), color = Muted, fontSize = 12.sp)
-            Text("End    " + JstDate.format(banner.endAt), color = Muted, fontSize = 12.sp)
-            Text(
-                "Open source: " + banner.sourceName,
-                color = Accent,
-                fontSize = 11.sp,
-                modifier = Modifier.clickable {
-                    runCatching { uriHandler.openUri(banner.sourceUrl) }
-                }
+            Box(
+                Modifier.matchParentSize().background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color.Black.copy(alpha = 0.72f), Color.Black.copy(alpha = 0.88f))
+                    )
+                )
             )
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text(banner.gameName, color = Accent, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text(banner.title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                if (banner.featuredUnits.isNotEmpty()) {
+                    Text("FEATURED LINEUP", color = Color.White.copy(alpha = 0.72f), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    Text(banner.featuredUnits.joinToString("  •  "), color = Color.White, fontSize = 13.sp)
+                }
+                Text(status, color = if (live) Color(0xFF8DE0B0) else Color.White.copy(alpha = 0.82f), fontSize = 12.sp)
+                Text("Start  " + JstDate.format(banner.startAt), color = Color.White.copy(alpha = 0.78f), fontSize = 12.sp)
+                Text("End    " + JstDate.format(banner.endAt), color = Color.White.copy(alpha = 0.78f), fontSize = 12.sp)
+                Text(
+                    "Open source: " + banner.sourceName,
+                    color = Accent,
+                    fontSize = 11.sp,
+                    modifier = Modifier.clickable {
+                        runCatching { uriHandler.openUri(banner.sourceUrl) }
+                    }
+                )
+            }
         }
     }
 }

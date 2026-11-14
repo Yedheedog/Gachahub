@@ -29,12 +29,14 @@ import com.yedheedog.gachahub.time.JapanTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private val AppBackground = Color(0xFF101116)
 private val Panel = Color(0xFF1B1D26)
 private val Accent = Color(0xFFB79CFF)
 private val Muted = Color(0xFF9A9BA8)
+private val JstZone = ZoneId.of("Asia/Tokyo")
 private val JstDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").withZone(JstZone)
 
 class MainActivity : ComponentActivity() {
@@ -221,6 +223,10 @@ private fun BannerCard(banner: Banner, now: Instant) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Text(banner.gameName, color = Accent, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             Text(banner.title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            if (banner.featuredUnits.isNotEmpty()) {
+                Text("FEATURED LINEUP", color = Muted, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Text(banner.featuredUnits.joinToString("  •  "), color = Color.White, fontSize = 13.sp)
+            }
             Text(status, color = if (live) Color(0xFF8DE0B0) else Muted, fontSize = 12.sp)
             Text("Start  " + JstDate.format(banner.startAt), color = Muted, fontSize = 12.sp)
             Text("End    " + JstDate.format(banner.endAt), color = Muted, fontSize = 12.sp)

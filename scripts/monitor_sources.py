@@ -22,6 +22,9 @@ SOURCES = [
     {"gameId": "学園アイドルマスター", "serverRegion": "JP", "name": "Gakuen Idolmaster official site (JP)", "url": "https://gakuen.idolmaster-official.jp/"},
     {"gameId": "umamusume", "serverRegion": "JP", "name": "Uma Musume official news (JP)", "url": "https://umamusume.jp/news/"},
     {"gameId": "七つの大罪", "serverRegion": "JP", "name": "Grand Cross official notices (JP server)", "url": "https://7taizai.netmarble.jp/notice/"},
+    # Netmarble forum: include only Japanese-language posts explicitly for the JP service;
+    # the forum path itself is not a reliable region indicator.
+    {"gameId": "七つの大罪", "serverRegion": "JP", "name": "Grand Cross Netmarble forum (JP-language notices; verify JP server)", "url": "https://forum.netmarble.com/7ds_en", "secondary": True},
     # GameWith is a secondary cross-check for banner dates and artwork, never primary evidence.
     {"gameId": "hololive_dreams", "serverRegion": "JP", "name": "GameWith hololive Dreams banner article (JP)", "url": "https://gamewith.jp/gamedb/15524/articles/65414", "secondary": True},
     {"gameId": "umamusume", "serverRegion": "JP", "name": "GameWith Uma Musume event schedule (JP)", "url": "https://gamewith.jp/uma-musume/article/show/257333", "secondary": True},
@@ -127,7 +130,7 @@ def main():
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "timezone": "Asia/Tokyo",
         "serverRegion": "JP",
-        "policy": "JP servers only. Exclude Global/English-server notices and schedules. Review-first: official Japanese-server announcements are preferred; GameWith is a secondary cross-check for dates and page artwork. This report never writes or modifies data/banners.json.",
+        "policy": "JP servers only. Exclude Global/English-server notices and schedules. Review-first: official Japanese-server announcements are preferred; the Netmarble forum is secondary and only Japanese-language posts explicitly for the JP service may be used; GameWith is a secondary cross-check for dates and page artwork. The forum URL path is not a reliable region indicator. This report never writes or modifies data/banners.json.",
         "sources": results,
     }
     with open("source-monitor-report.json", "w", encoding="utf-8") as f:

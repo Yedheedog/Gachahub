@@ -11,7 +11,8 @@ val supportedGames = listOf(
     Game(
         "hololive_dreams",
         "hololive Dreams",
-        "https://cimg.kgl-systems.io/camion/files/dengeki/67952/a2e095047ae6dc362e7e121b228d9ec42.jpeg?x=1280"
+        "https://cimg.kgl-systems.io/camion/files/dengeki/67952/a2e095047ae6dc362e7e121b228d9ec42.jpeg?x=1280",
+        "Worldwide"
     ),
     Game(
         "学園アイドルマスター",

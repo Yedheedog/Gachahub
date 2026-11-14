@@ -246,7 +246,7 @@ private fun BannerCard(banner: Banner, now: Instant) {
                 }
                 Text(status, color = if (live) Color(0xFF8DE0B0) else Color.White.copy(alpha = 0.82f), fontSize = 12.sp)
                 Text("Start  " + JstDate.format(banner.startAt), color = Color.White.copy(alpha = 0.78f), fontSize = 12.sp)
-                Text("End    " + JstDate.format(banner.endAt), color = Color.White.copy(alpha = 0.78f), fontSize = 12.sp)
+                Text((if (banner.endTimeEstimated) "End (estimated)  " else "End    ") + JstDate.format(banner.endAt), color = Color.White.copy(alpha = 0.78f), fontSize = 12.sp)
                 Text(
                     "Open source: " + banner.sourceName,
                     color = Accent,

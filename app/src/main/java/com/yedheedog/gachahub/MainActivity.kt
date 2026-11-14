@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.clip
@@ -14,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -53,6 +56,7 @@ private fun GachaHubHome() {
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var filter by remember { mutableStateOf("All") }
+    var selectedGameId by remember { mutableStateOf<String?>(null) }
     var now by remember { mutableStateOf(Instant.now()) }
     val scope = rememberCoroutineScope()
     val repository = remember { BannerRepository() }
@@ -72,14 +76,20 @@ private fun GachaHubHome() {
     LaunchedEffect(Unit) {
         refresh()
         while (true) {
-            delay(30_000)
+            delay(1_000)
             now = Instant.now()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(6 * 60 * 60 * 1_000L)
             refresh()
         }
     }
 
     val visible = banners.filter {
-        when (filter) {
+        (selectedGameId == null || it.gameId == selectedGameId) && when (filter) {
             "Live" -> it.startAt <= now && now < it.endAt
             "Upcoming" -> it.startAt > now
             "Ended" -> it.endAt <= now
@@ -117,6 +127,25 @@ private fun GachaHubHome() {
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     listOf("All", "Live", "Upcoming", "Ended").forEach { choice ->
                         FilterChip(selected = filter == choice, onClick = { filter = choice }, label = { Text(choice) })
+                    }
+                }
+            }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    FilterChip(
+                        selected = selectedGameId == null,
+                        onClick = { selectedGameId = null },
+                        label = { Text("All games") }
+                    )
+                    supportedGames.forEach { game ->
+                        FilterChip(
+                            selected = selectedGameId == game.id,
+                            onClick = { selectedGameId = game.id },
+                            label = { Text(game.name) }
+                        )
                     }
                 }
             }
@@ -183,6 +212,7 @@ private fun GachaHubHome() {
 
 @Composable
 private fun BannerCard(banner: Banner, now: Instant) {
+    val uriHandler = LocalUriHandler.current
     val live = banner.startAt <= now && now < banner.endAt
     val status = when {
         live -> "LIVE · " + countdown(banner.endAt, now) + " left"
@@ -196,8 +226,14 @@ private fun BannerCard(banner: Banner, now: Instant) {
             Text(status, color = if (live) Color(0xFF8DE0B0) else Muted, fontSize = 12.sp)
             Text("Start  " + JstDate.format(banner.startAt), color = Muted, fontSize = 12.sp)
             Text("End    " + JstDate.format(banner.endAt), color = Muted, fontSize = 12.sp)
-            Text("Source: " + banner.sourceName, color = Muted, fontSize = 11.sp)
-            Text(banner.sourceUrl, color = Accent, fontSize = 10.sp)
+            Text(
+                "Open source: " + banner.sourceName,
+                color = Accent,
+                fontSize = 11.sp,
+                modifier = Modifier.clickable {
+                    runCatching { uriHandler.openUri(banner.sourceUrl) }
+                }
+            )
         }
     }
 }

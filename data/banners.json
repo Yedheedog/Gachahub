@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-14T01:40:00Z",
+  "updatedAt": "2026-11-14T04:20:42Z",
   "timezone": "Asia/Tokyo",
   "banners": [
     {
@@ -10,12 +10,19 @@
       "endAt": "2026-11-14T01:59:00Z",
       "sourceName": "GameWith — banner dates",
       "sourceUrl": "https://gamewith.jp/gamedb/15524/articles/65414",
-      "featuredUnits": [
-        "Ayunda Risu",
-        "Moona Hoshinova",
-        "Airani Iofifteen"
-      ],
+      "featuredUnits": ["Ayunda Risu", "Moona Hoshinova", "Airani Iofifteen"],
       "imageUrl": "https://img.gamewith.jp/img/e9e93bf4da3071cd79ea46f4fba74489.jpeg"
+    },
+    {
+      "id": "hololive-dreams-bright-autumn-trip-202611",
+      "gameId": "hololive_dreams",
+      "title": "Bright Autumn Trip Gacha",
+      "startAt": "2026-11-14T02:00:00Z",
+      "endAt": "2026-11-26T01:59:59Z",
+      "sourceName": "Holodori — unofficial schedule (end time estimated)",
+      "sourceUrl": "https://holodori.best/announcements",
+      "featuredUnits": ["Robocosan", "Usada Pekora", "Momosuzu Nene", "Pavolia Reine", "IRyS"],
+      "endTimeEstimated": true
     },
     {
       "id": "gakumas-garbage-road-china-202611",

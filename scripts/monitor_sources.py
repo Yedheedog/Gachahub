@@ -18,6 +18,9 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 SOURCES = [
+    # Holodori is the preferred hololive Dreams discovery database, but is unofficial.
+    # Only use records explicitly filtered to the JP server; verify against official JP notices.
+    {"gameId": "hololive_dreams", "serverRegion": "JP", "name": "Holodori database (primary discovery; unofficial, JP filter required)", "url": "https://holodori.best/announcements", "secondary": True, "regionVerificationRequired": True},
     {"gameId": "hololive_dreams", "serverRegion": "JP", "name": "hololive Dreams official news (JP)", "url": "https://www.hololive-dreams.com/news/"},
     {"gameId": "学園アイドルマスター", "serverRegion": "JP", "name": "Gakuen Idolmaster official site (JP)", "url": "https://gakuen.idolmaster-official.jp/"},
     {"gameId": "umamusume", "serverRegion": "JP", "name": "Uma Musume official news (JP)", "url": "https://umamusume.jp/news/"},
@@ -108,7 +111,7 @@ def fetch(source):
                 "pageTitle": text[:180],
                 "pageImageUrl": meta.images[0] if meta.images else None,
                 "candidateExcerpts": matches,
-                "note": "GameWith is a secondary cross-check. Excerpts and page-level preview artwork are hints only; verify exact dates and banner-specific artwork before publishing.",
+                "note": ("Holodori is an unofficial discovery source: confirm the JP server filter and verify exact dates against official JP notices before publishing. " if source.get("regionVerificationRequired") else "") + "Excerpts and page-level preview artwork are hints only; verify exact dates and banner-specific artwork before publishing.",
             }
     except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
         return {
@@ -130,7 +133,7 @@ def main():
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "timezone": "Asia/Tokyo",
         "serverRegion": "JP",
-        "policy": "JP servers only. Exclude Global/English-server notices and schedules. Review-first: official Japanese-server announcements are preferred; the Netmarble forum is secondary and only Japanese-language posts explicitly for the JP service may be used; GameWith is a secondary cross-check for dates and page artwork. The forum URL path is not a reliable region indicator. This report never writes or modifies data/banners.json.",
+        "policy": "JP servers only. Exclude Global/English-server notices and schedules. Review-first: Holodori is the first-stop discovery database for hololive Dreams but is unofficial and must be filtered to JP, then checked against official JP notices; official Japanese-server announcements remain authoritative. The Netmarble forum is secondary and only Japanese-language posts explicitly for the JP service may be used; GameWith is a secondary cross-check for dates and page artwork. The forum URL path is not a reliable region indicator. This report never writes or modifies data/banners.json.",
         "sources": results,
     }
     with open("source-monitor-report.json", "w", encoding="utf-8") as f:

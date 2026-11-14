@@ -32,6 +32,7 @@ class BannerRepository {
                     val sourceName = item.optString("sourceName")
                     val title = item.optString("title")
                     val imageUrl = item.optString("imageUrl").takeIf { it.startsWith("https://") }
+                    val endTimeEstimated = item.optBoolean("endTimeEstimated", false)
                     val featuredArray = item.optJSONArray("featuredUnits")
                     val featuredUnits = if (featuredArray == null) emptyList() else buildList {
                         for (unitIndex in 0 until featuredArray.length()) {
@@ -49,6 +50,7 @@ class BannerRepository {
                         imageUrl = imageUrl,
                         startAt = start,
                         endAt = end,
+                        endTimeEstimated = endTimeEstimated,
                         sourceName = sourceName,
                         sourceUrl = sourceUrl
                     ))

@@ -1,6 +1,6 @@
 # GachaHub
 
-A mobile-first Android app for tracking Japanese-server gacha banners.
+A mobile-first Android app for tracking Japanese-server gacha banners. **All four supported games are JP-server only; Global/English-server banners, dates, maintenance notices, and schedules must never be used.**
 
 ## Supported games
 - hololive Dreams (JP)
@@ -24,7 +24,7 @@ The **Monitor Japanese gacha sources** GitHub Actions workflow runs every six ho
 
 ## Adding a verified banner
 1. Open the original official notice and confirm the Japanese-server banner name and exact start/end times.
-2. Convert the announced JST times to ISO-8601 instants (JST is UTC+09:00). For example, `2026-11-14T11:00:00+09:00` is `2026-11-14T02:00:00Z`.
+2. Confirm the notice is for the Japanese server (not Global/English). For Grand Cross, use the Japanese official notice at `7taizai.netmarble.jp`; Global-server announcements are excluded. GameWith is only a secondary cross-check and must also refer to the JP schedule. Convert the announced JST times to ISO-8601 instants (JST is UTC+09:00). For example, `2026-11-14T11:00:00+09:00` is `2026-11-14T02:00:00Z`.
 3. Add a unique record to `data/banners.json` using the schema above.
 4. Confirm the `gameId` exactly matches `app/src/main/java/com/yedheedog/gachahub/data/Game.kt`.
 

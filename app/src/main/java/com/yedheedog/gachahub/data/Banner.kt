@@ -7,6 +7,7 @@ data class Banner(
     val gameId: String,
     val gameName: String,
     val title: String,
+    val featuredUnits: List<String> = emptyList(),
     val startAt: Instant,
     val endAt: Instant,
     val sourceName: String,

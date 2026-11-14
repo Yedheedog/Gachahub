@@ -15,7 +15,7 @@ SUPPORTED_GAMES = {
     "七つの大罪",
 }
 REQUIRED = {"id", "gameId", "title", "startAt", "endAt", "sourceName", "sourceUrl"}
-ISO_INSTANT = re.compile(r"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$")
+ISO_INSTANT = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$")
 
 
 def parse_instant(value: object, label: str) -> datetime:

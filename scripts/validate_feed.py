@@ -50,6 +50,9 @@ def main() -> int:
         seen.add(banner["id"])
         if banner["gameId"] not in SUPPORTED_GAMES:
             raise ValueError(f"{label}.gameId is not supported: {banner['gameId']}")
+        featured = banner.get("featuredUnits", [])
+        if not isinstance(featured, list) or len(featured) > 5 or any(not isinstance(unit, str) or not unit.strip() for unit in featured):
+            raise ValueError(f"{label}.featuredUnits must be an array of up to five non-empty names")
         if not banner["sourceUrl"].startswith("https://"):
             raise ValueError(f"{label}.sourceUrl must use HTTPS")
         start = parse_instant(banner["startAt"], f"{label}.startAt")

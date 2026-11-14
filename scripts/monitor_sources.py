@@ -22,6 +22,10 @@ SOURCES = [
     {"gameId": "学園アイドルマスター", "name": "Gakuen Idolmaster official site", "url": "https://gakuen.idolmaster-official.jp/"},
     {"gameId": "umamusume", "name": "Uma Musume official news", "url": "https://umamusume.jp/news/"},
     {"gameId": "七つの大罪", "name": "Grand Cross official notices", "url": "https://7taizai.netmarble.jp/notice/"},
+    # GameWith is a secondary cross-check for banner dates and artwork, never primary evidence.
+    {"gameId": "hololive_dreams", "name": "GameWith hololive Dreams banner article", "url": "https://gamewith.jp/gamedb/15524/articles/65414", "secondary": True},
+    {"gameId": "umamusume", "name": "GameWith Uma Musume event schedule", "url": "https://gamewith.jp/uma-musume/article/show/257333", "secondary": True},
+    {"gameId": "七つの大罪", "name": "GameWith Grand Cross gacha schedule", "url": "https://gamewith.jp/7taizai/article/show/155826", "secondary": True},
     # Discovery-only calendar for official @gkmas_official posts. Not treated as
     # primary evidence; the original official post must be checked before publish.
     {"gameId": "学園アイドルマスター", "name": "Gakumas official-account calendar mirror (discovery only)", "url": "https://oshical.com/gkmas_official", "discoveryOnly": True},
@@ -29,6 +33,23 @@ SOURCES = [
 
 KEYWORDS = re.compile(r"ガチャ|ガシャ|ピックアップ|開催期間|メンテナンス|gacha|pickup|banner", re.I)
 NOISE = re.compile(r"\s+")
+
+
+class MetaExtractor(HTMLParser):
+    """Collect page-level preview artwork without assuming it is banner-specific."""
+    def __init__(self):
+        super().__init__()
+        self.images = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() != "meta":
+            return
+        values = {key.lower(): value for key, value in attrs if key and value}
+        key = (values.get("property") or values.get("name") or "").lower()
+        if key in {"og:image", "twitter:image"}:
+            url = values.get("content", "").strip()
+            if url.startswith("https://") and url not in self.images:
+                self.images.append(url)
 
 
 class TextExtractor(HTMLParser):
@@ -64,6 +85,8 @@ def fetch(source):
             html = raw.decode(charset, errors="replace")
             parser = TextExtractor()
             parser.feed(html)
+            meta = MetaExtractor()
+            meta.feed(html)
             text = NOISE.sub(" ", " ".join(parser.parts)).strip()
             matches = []
             for match in KEYWORDS.finditer(text):
@@ -80,8 +103,9 @@ def fetch(source):
                 "checkedAt": datetime.now(timezone.utc).isoformat(),
                 "contentSha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
                 "pageTitle": text[:180],
+                "pageImageUrl": meta.images[0] if meta.images else None,
                 "candidateExcerpts": matches,
-                "note": "Excerpts are discovery hints only; verify exact banner dates on the original official notice.",
+                "note": "GameWith is a secondary cross-check. Excerpts and page-level preview artwork are hints only; verify exact dates and banner-specific artwork before publishing.",
             }
     except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
         return {
@@ -89,6 +113,7 @@ def fetch(source):
             "status": "error",
             "checkedAt": datetime.now(timezone.utc).isoformat(),
             "error": str(exc)[:300],
+            "pageImageUrl": None,
             "candidateExcerpts": [],
         }
 
@@ -101,7 +126,7 @@ def main():
     report = {
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "timezone": "Asia/Tokyo",
-        "policy": "Review-first: this report never writes or modifies data/banners.json.",
+        "policy": "Review-first: official announcements are preferred; GameWith is a secondary cross-check for dates and page artwork. This report never writes or modifies data/banners.json.",
         "sources": results,
     }
     with open("source-monitor-report.json", "w", encoding="utf-8") as f:

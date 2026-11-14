@@ -18,17 +18,17 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 SOURCES = [
-    {"gameId": "hololive_dreams", "name": "hololive Dreams official news", "url": "https://www.hololive-dreams.com/news/"},
-    {"gameId": "学園アイドルマスター", "name": "Gakuen Idolmaster official site", "url": "https://gakuen.idolmaster-official.jp/"},
-    {"gameId": "umamusume", "name": "Uma Musume official news", "url": "https://umamusume.jp/news/"},
-    {"gameId": "七つの大罪", "name": "Grand Cross official notices", "url": "https://7taizai.netmarble.jp/notice/"},
+    {"gameId": "hololive_dreams", "serverRegion": "JP", "name": "hololive Dreams official news (JP)", "url": "https://www.hololive-dreams.com/news/"},
+    {"gameId": "学園アイドルマスター", "serverRegion": "JP", "name": "Gakuen Idolmaster official site (JP)", "url": "https://gakuen.idolmaster-official.jp/"},
+    {"gameId": "umamusume", "serverRegion": "JP", "name": "Uma Musume official news (JP)", "url": "https://umamusume.jp/news/"},
+    {"gameId": "七つの大罪", "serverRegion": "JP", "name": "Grand Cross official notices (JP server)", "url": "https://7taizai.netmarble.jp/notice/"},
     # GameWith is a secondary cross-check for banner dates and artwork, never primary evidence.
-    {"gameId": "hololive_dreams", "name": "GameWith hololive Dreams banner article", "url": "https://gamewith.jp/gamedb/15524/articles/65414", "secondary": True},
-    {"gameId": "umamusume", "name": "GameWith Uma Musume event schedule", "url": "https://gamewith.jp/uma-musume/article/show/257333", "secondary": True},
-    {"gameId": "七つの大罪", "name": "GameWith Grand Cross gacha schedule", "url": "https://gamewith.jp/7taizai/article/show/155826", "secondary": True},
+    {"gameId": "hololive_dreams", "serverRegion": "JP", "name": "GameWith hololive Dreams banner article (JP)", "url": "https://gamewith.jp/gamedb/15524/articles/65414", "secondary": True},
+    {"gameId": "umamusume", "serverRegion": "JP", "name": "GameWith Uma Musume event schedule (JP)", "url": "https://gamewith.jp/uma-musume/article/show/257333", "secondary": True},
+    {"gameId": "七つの大罪", "serverRegion": "JP", "name": "GameWith Grand Cross gacha schedule (JP)", "url": "https://gamewith.jp/7taizai/article/show/155826", "secondary": True},
     # Discovery-only calendar for official @gkmas_official posts. Not treated as
     # primary evidence; the original official post must be checked before publish.
-    {"gameId": "学園アイドルマスター", "name": "Gakumas official-account calendar mirror (discovery only)", "url": "https://oshical.com/gkmas_official", "discoveryOnly": True},
+    {"gameId": "学園アイドルマスター", "serverRegion": "JP", "name": "Gakumas official-account calendar mirror (JP, discovery only)", "url": "https://oshical.com/gkmas_official", "discoveryOnly": True},
 ]
 
 KEYWORDS = re.compile(r"ガチャ|ガシャ|ピックアップ|開催期間|メンテナンス|gacha|pickup|banner", re.I)
@@ -126,7 +126,8 @@ def main():
     report = {
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "timezone": "Asia/Tokyo",
-        "policy": "Review-first: official announcements are preferred; GameWith is a secondary cross-check for dates and page artwork. This report never writes or modifies data/banners.json.",
+        "serverRegion": "JP",
+        "policy": "JP servers only. Exclude Global/English-server notices and schedules. Review-first: official Japanese-server announcements are preferred; GameWith is a secondary cross-check for dates and page artwork. This report never writes or modifies data/banners.json.",
         "sources": results,
     }
     with open("source-monitor-report.json", "w", encoding="utf-8") as f:

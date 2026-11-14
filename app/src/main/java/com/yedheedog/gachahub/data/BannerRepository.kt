@@ -30,12 +30,13 @@ class BannerRepository {
                     if (!end.isAfter(start)) continue
                     val sourceUrl = item.optString("sourceUrl")
                     val sourceName = item.optString("sourceName")
-                    if (!sourceUrl.startsWith("https://") || sourceName.isBlank()) continue
+                    val title = item.optString("title")
+                    if (!sourceUrl.startsWith("https://") || sourceName.isBlank() || title.isBlank()) continue
                     add(Banner(
                         id = item.optString("id", gameId + "-" + index),
                         gameId = gameId,
                         gameName = game.name,
-                        title = item.optString("title").ifBlank { continue },
+                        title = title,
                         startAt = start,
                         endAt = end,
                         sourceName = sourceName,

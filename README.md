@@ -16,9 +16,10 @@ Each banner requires:
 - `startAt`, `endAt` (ISO-8601 instants; do not guess missing times)
 - `sourceName`, `sourceUrl` (HTTPS evidence URL)
 - optional `featuredUnits`: an array of up to five featured unit names. For hololive Dreams, keep a multi-unit pickup (usually 3–5 talents) as **one banner record** and list each featured talent here; do not split one shared banner into separate records.
+- optional `imageUrl`: HTTPS URL for the banner-specific artwork. The app displays it behind a dark readability overlay; cards fall back to the plain dark style when absent.
 
 ## Automatic source monitoring
-The **Monitor Japanese gacha sources** GitHub Actions workflow runs every six hours and can also be started manually from Actions. It checks public announcement pages, extracts keyword-based excerpts, and uploads a 30-day report artifact. The report is a discovery aid, not verified banner data. It deliberately does not write to `data/banners.json`: a human must open the original official announcement, verify the exact banner name and start/end instants, then publish the record. Gakumas' calendar mirror is marked discovery-only; verify against the original @gkmas_official post. X itself is not scraped because authenticated API access is not configured.
+The **Monitor Japanese gacha sources** GitHub Actions workflow runs every six hours and can also be started manually from Actions. It checks public announcement pages, extracts keyword-based excerpts, and uploads a 30-day report artifact. The report is a discovery aid, not verified banner data. It checks official announcements first and includes GameWith as a secondary cross-check for date gaps and page-level artwork previews. A human must verify exact banner-specific artwork and start/end instants before publishing. It deliberately does not write to `data/banners.json`. Gakumas' calendar mirror is marked discovery-only; verify against the original @gkmas_official post. X itself is not scraped because authenticated API access is not configured.
 
 ## Adding a verified banner
 1. Open the original official notice and confirm the Japanese-server banner name and exact start/end times.
@@ -27,7 +28,7 @@ The **Monitor Japanese gacha sources** GitHub Actions workflow runs every six ho
 4. Confirm the `gameId` exactly matches `app/src/main/java/com/yedheedog/gachahub/data/Game.kt`.
 
 ## Continuous validation
-The Android build workflow runs `scripts/validate_feed.py` before compiling. The validator checks the JST timezone declaration, ISO-8601 instants with explicit UTC offsets, required fields, supported game IDs, unique banner IDs, optional featured-unit lists (up to five names), HTTPS source links, and start/end ordering.
+The Android build workflow runs `scripts/validate_feed.py` before compiling. The validator checks the JST timezone declaration, ISO-8601 instants with explicit UTC offsets, required fields, supported game IDs, unique banner IDs, optional featured-unit lists (up to five names), optional HTTPS banner artwork URLs, HTTPS source links, and start/end ordering.
 
 ## Build
 Open in Android Studio with JDK 17 and Android SDK 35, sync Gradle, and run the `app` configuration.

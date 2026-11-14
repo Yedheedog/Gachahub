@@ -53,6 +53,9 @@ def main() -> int:
         featured = banner.get("featuredUnits", [])
         if not isinstance(featured, list) or len(featured) > 5 or any(not isinstance(unit, str) or not unit.strip() for unit in featured):
             raise ValueError(f"{label}.featuredUnits must be an array of up to five non-empty names")
+        estimated_end = banner.get("endTimeEstimated", False)
+        if not isinstance(estimated_end, bool):
+            raise ValueError(f"{label}.endTimeEstimated must be a boolean when provided")
         image_url = banner.get("imageUrl")
         if image_url is not None and (not isinstance(image_url, str) or not image_url.startswith("https://")):
             raise ValueError(f"{label}.imageUrl must be an HTTPS URL when provided")

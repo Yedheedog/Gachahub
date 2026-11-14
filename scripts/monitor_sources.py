@@ -19,7 +19,7 @@ from urllib.request import Request, urlopen
 
 SOURCES = [
     # hololive Dreams banners are treated as a shared worldwide schedule.
-    # Discover via Holodori; verify the banner and JST schedule against official notices,
+    # Discover via Holodori. If an official end clock is missing, its listed end time may be used as a secondary-source estimate and flagged in the feed; verify banner identity and any regional exceptions.
     # and flag any documented regional exclusions or timing differences.
     {"gameId": "hololive_dreams", "serverScope": "GLOBAL_SHARED", "name": "Holodori (primary discovery; unofficial, shared schedule)", "url": "https://holodori.best/announcements", "priority": "primary_discovery", "regionExceptionsMustBeChecked": True},
     {"gameId": "hololive_dreams", "serverScope": "GLOBAL_SHARED", "name": "hololive Dreams official news (official schedule verification)", "url": "https://www.hololive-dreams.com/news/", "priority": "official_verification"},
@@ -112,7 +112,7 @@ def fetch(source):
                 "pageTitle": text[:180],
                 "pageImageUrl": meta.images[0] if meta.images else None,
                 "candidateExcerpts": matches,
-                "note": ("Primary discovery source for new hololive Dreams banners. Treat the schedule as shared worldwide; verify exact JST dates against official notices and check for any documented regional exclusions or timing differences. " if source.get("priority") == "primary_discovery" else "") + ("Backup cross-check only; do not use as the initial discovery source for hololive Dreams. " if source.get("priority") == "backup_cross_check" else "") + "Excerpts and page-level preview artwork are hints only; verify exact dates and banner-specific artwork before publishing.",
+                "note": ("Primary discovery source for new hololive Dreams banners. Treat the schedule as shared worldwide; prefer official dates, but when an official notice omits an exact end clock, Holodori's listed end time may be used as a secondary-source estimate; set endTimeEstimated=true and identify Holodori in sourceName. Check for documented regional exceptions. " if source.get("priority") == "primary_discovery" else "") + ("Backup cross-check only; do not use as the initial discovery source for hololive Dreams. " if source.get("priority") == "backup_cross_check" else "") + "Excerpts and page-level preview artwork are hints only; verify exact dates and banner-specific artwork before publishing.",
             }
     except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
         return {
@@ -134,7 +134,7 @@ def main():
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "timezone": "Asia/Tokyo",
         "serverScopePolicy": "hololive_dreams=GLOBAL_SHARED (single worldwide banner schedule; check for documented regional exceptions); Gakuen Idolmaster, Uma Musume, and The Seven Deadly Sins: Grand Cross=JP_ONLY.",
-        "policy": "hololive Dreams: treat each banner as one shared worldwide schedule, discover via Holodori first, verify banner identity and exact JST dates against official notices, and flag documented regional exclusions or timing differences rather than assuming none exist. GameWith is backup cross-check only for hololive Dreams. Uma Musume: use the official JP news portal as the primary source for banner information; a third-party schedule is not required when the official notice provides the details. Gakuen Idolmaster, Uma Musume, and Grand Cross remain JP-server only; exclude Global/English-server notices and schedules for those games. The Netmarble forum is secondary and only Japanese-language posts explicitly for the JP service may be used; its URL path is not a reliable region indicator. Review-first: this report never writes or modifies data/banners.json.",
+        "policy": "hololive Dreams: treat each banner as one shared worldwide schedule, discover via Holodori first. Prefer official dates; when an official notice omits an exact end clock, Holodori's listed end time may be used as a secondary-source estimate, with endTimeEstimated=true and Holodori named in sourceName. Check for documented regional exclusions or timing differences. GameWith is backup cross-check only for hololive Dreams. Uma Musume: use the official JP news portal as the primary source for banner information; a third-party schedule is not required when the official notice provides the details. Gakuen Idolmaster, Uma Musume, and Grand Cross remain JP-server only; exclude Global/English-server notices and schedules for those games. The Netmarble forum is secondary and only Japanese-language posts explicitly for the JP service may be used; its URL path is not a reliable region indicator. Review-first: this report never writes or modifies data/banners.json.",
         "sources": results,
     }
     with open("source-monitor-report.json", "w", encoding="utf-8") as f:

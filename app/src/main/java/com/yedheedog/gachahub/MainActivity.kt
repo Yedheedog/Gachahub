@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.draw.clip
 import coil.compose.AsyncImage
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,14 +29,12 @@ import com.yedheedog.gachahub.time.JapanTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private val AppBackground = Color(0xFF101116)
 private val Panel = Color(0xFF1B1D26)
 private val Accent = Color(0xFFB79CFF)
 private val Muted = Color(0xFF9A9BA8)
-private val JstZone = ZoneId.of("Asia/Tokyo")
 private val JstDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").withZone(JstZone)
 
 class MainActivity : ComponentActivity() {

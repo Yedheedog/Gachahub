@@ -31,12 +31,20 @@ class BannerRepository {
                     val sourceUrl = item.optString("sourceUrl")
                     val sourceName = item.optString("sourceName")
                     val title = item.optString("title")
+                    val featuredArray = item.optJSONArray("featuredUnits")
+                    val featuredUnits = if (featuredArray == null) emptyList() else buildList {
+                        for (unitIndex in 0 until featuredArray.length()) {
+                            val unit = featuredArray.optString(unitIndex).trim()
+                            if (unit.isNotEmpty()) add(unit)
+                        }
+                    }
                     if (!sourceUrl.startsWith("https://") || sourceName.isBlank() || title.isBlank()) continue
                     add(Banner(
                         id = item.optString("id", gameId + "-" + index),
                         gameId = gameId,
                         gameName = game.name,
                         title = title,
+                        featuredUnits = featuredUnits,
                         startAt = start,
                         endAt = end,
                         sourceName = sourceName,

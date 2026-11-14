@@ -5,11 +5,16 @@
     {
       "id": "hololive-dreams-warm-chill-time-202611",
       "gameId": "hololive_dreams",
-      "title": "ぬくもりのチルタイムガチャ — Ayunda Risu, Moona Hoshinova & Airani Iofifteen",
+      "title": "ぬくもりのチルタイムガチャ",
       "startAt": "2026-11-06T02:00:00Z",
       "endAt": "2026-11-14T01:59:00Z",
       "sourceName": "GameWith — banner dates",
-      "sourceUrl": "https://gamewith.jp/gamedb/15524/articles/65414"
+      "sourceUrl": "https://gamewith.jp/gamedb/15524/articles/65414",
+      "featuredUnits": [
+        "Ayunda Risu",
+        "Moona Hoshinova",
+        "Airani Iofifteen"
+      ]
     },
     {
       "id": "gakumas-garbage-road-china-202611",

@@ -24,14 +24,14 @@ SOURCES = [
     {"gameId": "hololive_dreams", "serverScope": "GLOBAL_SHARED", "name": "Holodori (primary discovery; unofficial, shared schedule)", "url": "https://holodori.best/announcements", "priority": "primary_discovery", "regionExceptionsMustBeChecked": True},
     {"gameId": "hololive_dreams", "serverScope": "GLOBAL_SHARED", "name": "hololive Dreams official news (official schedule verification)", "url": "https://www.hololive-dreams.com/news/", "priority": "official_verification"},
     {"gameId": "学園アイドルマスター", "serverRegion": "JP", "name": "Gakuen Idolmaster official site (JP)", "url": "https://gakuen.idolmaster-official.jp/"},
-    {"gameId": "umamusume", "serverRegion": "JP", "name": "Uma Musume official news (JP)", "url": "https://umamusume.jp/news/"},
+    # Official JP portal is the primary and sufficient source for Uma Musume banner details.
+    {"gameId": "umamusume", "serverRegion": "JP", "name": "Uma Musume official news (JP; primary source)", "url": "https://umamusume.jp/news/", "priority": "official_primary"},
     {"gameId": "七つの大罪", "serverRegion": "JP", "name": "Grand Cross official notices (JP server)", "url": "https://7taizai.netmarble.jp/notice/"},
     # Netmarble forum: include only Japanese-language posts explicitly for the JP service;
     # the forum path itself is not a reliable region indicator.
     {"gameId": "七つの大罪", "serverRegion": "JP", "name": "Grand Cross Netmarble forum (JP-language notices; verify JP server)", "url": "https://forum.netmarble.com/7ds_en", "secondary": True},
     # GameWith is backup only for hololive Dreams; never use it as first discovery source.
     {"gameId": "hololive_dreams", "serverScope": "GLOBAL_SHARED", "name": "GameWith hololive Dreams (backup cross-check only)", "url": "https://gamewith.jp/gamedb/15524/articles/65414", "secondary": True, "priority": "backup_cross_check"},
-    {"gameId": "umamusume", "serverRegion": "JP", "name": "GameWith Uma Musume event schedule (JP)", "url": "https://gamewith.jp/uma-musume/article/show/257333", "secondary": True},
     {"gameId": "七つの大罪", "serverRegion": "JP", "name": "GameWith Grand Cross gacha schedule (JP)", "url": "https://gamewith.jp/7taizai/article/show/155826", "secondary": True},
     # Discovery-only calendar for official @gkmas_official posts. Not treated as
     # primary evidence; the original official post must be checked before publish.
@@ -134,7 +134,7 @@ def main():
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "timezone": "Asia/Tokyo",
         "serverScopePolicy": "hololive_dreams=GLOBAL_SHARED (single worldwide banner schedule; check for documented regional exceptions); Gakuen Idolmaster, Uma Musume, and The Seven Deadly Sins: Grand Cross=JP_ONLY.",
-        "policy": "hololive Dreams: treat each banner as one shared worldwide schedule, discover via Holodori first, verify banner identity and exact JST dates against official notices, and flag documented regional exclusions or timing differences rather than assuming none exist. GameWith is backup cross-check only, never the primary discovery source. Gakuen Idolmaster, Uma Musume, and Grand Cross remain JP-server only; exclude Global/English-server notices and schedules for those games. The Netmarble forum is secondary and only Japanese-language posts explicitly for the JP service may be used; its URL path is not a reliable region indicator. Review-first: this report never writes or modifies data/banners.json.",
+        "policy": "hololive Dreams: treat each banner as one shared worldwide schedule, discover via Holodori first, verify banner identity and exact JST dates against official notices, and flag documented regional exclusions or timing differences rather than assuming none exist. GameWith is backup cross-check only for hololive Dreams. Uma Musume: use the official JP news portal as the primary source for banner information; a third-party schedule is not required when the official notice provides the details. Gakuen Idolmaster, Uma Musume, and Grand Cross remain JP-server only; exclude Global/English-server notices and schedules for those games. The Netmarble forum is secondary and only Japanese-language posts explicitly for the JP service may be used; its URL path is not a reliable region indicator. Review-first: this report never writes or modifies data/banners.json.",
         "sources": results,
     }
     with open("source-monitor-report.json", "w", encoding="utf-8") as f:

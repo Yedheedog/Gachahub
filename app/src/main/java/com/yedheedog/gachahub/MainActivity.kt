@@ -227,7 +227,7 @@ private fun BannerCard(banner: Banner, now: Instant) {
                     model = banner.imageUrl,
                     contentDescription = banner.title + " banner artwork",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth().height(230.dp)
+                    modifier = Modifier.matchParentSize()
                 )
             }
             Box(

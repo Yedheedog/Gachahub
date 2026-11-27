@@ -101,12 +101,14 @@ private fun GachaHubHome() {
         }
     }
 
+    // "All" is the active calendar: expired banners belong only in the Ended archive.
+    // Compare against the live clock so a banner disappears as soon as its endAt is reached.
     val visible = banners.filter {
         (selectedGameId == null || it.gameId == selectedGameId) && when (filter) {
             "Live" -> it.startAt <= now && now < it.endAt
             "Upcoming" -> it.startAt > now
             "Ended" -> it.endAt <= now
-            else -> true
+            else -> it.endAt > now
         }
     }.sortedBy { it.startAt }
 

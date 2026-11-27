@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: gacha-source-monitor
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   monitor:
@@ -25,7 +25,19 @@ jobs:
           python-version: "3.12"
       - name: Check announcement sources
         run: python scripts/monitor_sources.py
-      - name: Upload source monitor report
+      - name: Publish report for the Android app
+        run: |
+          cp source-monitor-report.json data/source-monitor-report.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/source-monitor-report.json
+          if git diff --cached --quiet; then
+            echo "Published report is unchanged; no commit needed."
+          else
+            git commit -m "Update source monitor report"
+            git push
+          fi
+      - name: Upload source monitor report artifact
         uses: actions/upload-artifact@v4
         with:
           name: gacha-source-monitor-report

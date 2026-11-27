@@ -8,9 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,11 +17,17 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.yedheedog.gachahub.data.Banner
 import com.yedheedog.gachahub.data.BannerRepository
+import com.yedheedog.gachahub.data.SourceMonitorEntry
+import com.yedheedog.gachahub.data.SourceMonitorRepository
+import com.yedheedog.gachahub.data.SourceMonitorReport
 import com.yedheedog.gachahub.data.supportedGames
 import com.yedheedog.gachahub.time.JapanTime
 import kotlinx.coroutines.delay
@@ -54,21 +57,30 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun GachaHubHome() {
     var banners by remember { mutableStateOf<List<Banner>>(emptyList()) }
+    var monitorReport by remember { mutableStateOf<SourceMonitorReport?>(null) }
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    var monitorError by remember { mutableStateOf<String?>(null) }
     var filter by remember { mutableStateOf("All") }
     var selectedGameId by remember { mutableStateOf<String?>(null) }
     var now by remember { mutableStateOf(Instant.now()) }
     val scope = rememberCoroutineScope()
-    val repository = remember { BannerRepository() }
+    val bannerRepository = remember { BannerRepository() }
+    val monitorRepository = remember { SourceMonitorRepository() }
 
     suspend fun refresh() {
         loading = true
         try {
-            banners = repository.fetchBanners()
+            banners = bannerRepository.fetchBanners()
             error = null
         } catch (e: Exception) {
             error = "Could not update banner feed. Check your connection and try again."
+        }
+        try {
+            monitorReport = monitorRepository.fetchReport()
+            monitorError = null
+        } catch (e: Exception) {
+            monitorError = "Source discoveries could not be updated. The last loaded report is kept."
         } finally {
             loading = false
         }
@@ -97,6 +109,11 @@ private fun GachaHubHome() {
             else -> true
         }
     }.sortedBy { it.startAt }
+
+    val visibleDiscoveries = monitorReport?.sources.orEmpty().filter {
+        (selectedGameId == null || it.gameId == selectedGameId) &&
+            (it.candidateExcerpts.isNotEmpty() || it.status != "ok")
+    }
 
     Surface(modifier = Modifier.fillMaxSize(), color = AppBackground) {
         LazyColumn(
@@ -171,6 +188,43 @@ private fun GachaHubHome() {
                 BannerCard(banner = banner, now = now)
             }
             item {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("SOURCE DISCOVERIES", color = Muted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        monitorReport?.generatedAt?.let { "Last checked: " + formatReportTime(it) }
+                            ?: "Waiting for the first published source report",
+                        color = Muted,
+                        fontSize = 11.sp
+                    )
+                    Text(
+                        "Discovery hints only — verify announcements before adding them to the banner calendar.",
+                        color = Muted,
+                        fontSize = 11.sp
+                    )
+                }
+            }
+            if (monitorError != null) {
+                item { Text(monitorError!!, color = Color(0xFFFFD18A), fontSize = 12.sp) }
+            }
+            if (monitorReport == null && monitorError == null) {
+                item { Text("Loading source discoveries…", color = Muted, fontSize = 12.sp) }
+            } else if (visibleDiscoveries.isEmpty()) {
+                item {
+                    Surface(color = Panel, shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            if (monitorReport == null) "No source report available yet."
+                            else "No keyword excerpts or source errors were reported for this selection.",
+                            color = Muted,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+            }
+            items(visibleDiscoveries, key = { it.url }) { entry ->
+                SourceDiscoveryCard(entry)
+            }
+            item {
                 Text("YOUR GAMES", color = Muted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
             items(supportedGames) { game ->
@@ -186,9 +240,7 @@ private fun GachaHubHome() {
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
                         )
-                        Box(
-                            Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.58f))
-                        )
+                        Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.58f)))
                         Row(
                             modifier = Modifier.fillMaxSize().padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -209,6 +261,42 @@ private fun GachaHubHome() {
             }
         }
     }
+}
+
+@Composable
+private fun SourceDiscoveryCard(entry: SourceMonitorEntry) {
+    val uriHandler = LocalUriHandler.current
+    Surface(color = Panel, shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(entry.name, color = Color.White, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                Text(
+                    if (entry.status == "ok") "CHECKED" else "ERROR",
+                    color = if (entry.status == "ok") Color(0xFF8DE0B0) else Color(0xFFFFB4AB),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            entry.error?.let { Text(it, color = Color(0xFFFFB4AB), fontSize = 12.sp) }
+            entry.candidateExcerpts.forEachIndexed { index, excerpt ->
+                Text("HINT " + (index + 1), color = Accent, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Text(excerpt, color = Color.White.copy(alpha = 0.88f), fontSize = 12.sp)
+            }
+            if (entry.candidateExcerpts.isEmpty() && entry.status == "ok") {
+                Text("No keyword excerpts found on this check.", color = Muted, fontSize = 12.sp)
+            }
+            Text(
+                "Open source: " + entry.url,
+                color = Accent,
+                fontSize = 11.sp,
+                modifier = Modifier.clickable { runCatching { uriHandler.openUri(entry.url) } }
+            )
+        }
+    }
+}
+
+private fun formatReportTime(value: String): String {
+    return runCatching { JstDate.format(Instant.parse(value)) + " JST" }.getOrDefault(value)
 }
 
 @Composable

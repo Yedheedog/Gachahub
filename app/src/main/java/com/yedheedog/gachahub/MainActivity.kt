@@ -191,7 +191,7 @@ private fun GachaHubHome() {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("SOURCE DISCOVERIES", color = Muted, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Text(
-                        monitorReport?.generatedAt?.let { "Last checked: " + formatReportTime(it) }
+                        monitorReport?.generatedAt?.takeIf { it.isNotBlank() }?.let { "Last checked: " + formatReportTime(it) }
                             ?: "Waiting for the first published source report",
                         color = Muted,
                         fontSize = 11.sp
@@ -212,8 +212,11 @@ private fun GachaHubHome() {
                 item {
                     Surface(color = Panel, shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            if (monitorReport == null) "No source report available yet."
-                            else "No keyword excerpts or source errors were reported for this selection.",
+                            when {
+                                monitorReport == null -> "No source report available yet."
+                                monitorReport?.sources?.isEmpty() == true -> "The monitor feed is connected. Discovery results will appear after the next scheduled or manually started source check."
+                                else -> "No keyword excerpts or source errors were reported for this selection."
+                            },
                             color = Muted,
                             fontSize = 12.sp,
                             modifier = Modifier.padding(16.dp)
